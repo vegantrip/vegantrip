@@ -4,16 +4,29 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>world clock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&display=swap" rel="stylesheet">
 <style>
   :root {
-    --time-size: 44px;
+    --time-size: 48px;
+    --time-stroke: 0.6px;
+    --time-skew: -6deg;
     --city-size: 13px;
     --date-size: 12px;
+    --gap: 56px;
+
+    --sub-time-size: 24px;
+    --sub-time-stroke: 0.35px;
+    --sub-city-size: 11px;
+    --sub-date-size: 11px;
+    --sub-gap: 20px;
+
     --text-color: #37352f;
     --sub-color: #9b9a97;
     --accent: #e8788a;
-    --gap: 40px;
     --font: "Georgia", "Times New Roman", serif;
+    --font-time: "DM Serif Display", "Times New Roman", serif;
   }
   @media (prefers-color-scheme: dark) {
     :root { --text-color: #ffffffcc; --sub-color: #ffffff80; }
@@ -24,60 +37,34 @@
     font-family: var(--font);
     color: var(--text-color);
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: var(--gap);
+    gap: 40px;
     min-height: 100vh;
     padding: 16px;
     box-sizing: border-box;
     text-align: center;
   }
-  .city { font-size: var(--city-size); color: var(--sub-color); letter-spacing: 0.1em; text-transform: uppercase; }
-  .time { font-size: var(--time-size); color: var(--accent); line-height: 1.1; margin: 6px 0; font-weight: 600; font-variant-numeric: tabular-nums; }
-  .date { font-size: var(--date-size); color: var(--sub-color); letter-spacing: 0.05em; }
-</style>
-</head>
-<body>
+  .row { display: flex; justify-content: center; align-items: flex-start; }
+  #main { gap: var(--gap); flex-wrap: wrap; }
+  #sub  { gap: var(--sub-gap); flex-wrap: nowrap; }
 
-<div id="clocks" style="display:contents"></div>
-
-<script>
-  const USE_24H = true;
-
-  const CITIES = [
-    { name: "Seoul",     tz: "Asia/Seoul" },
-    { name: "Hong Kong", tz: "Asia/Hong_Kong" }
-    // { name: "Dresden",   tz: "Europe/Berlin" },
-    // { name: "Tokyo",     tz: "Asia/Tokyo" },
-    // { name: "New York",  tz: "America/New_York" },
-    // { name: "London",    tz: "Europe/London" },
-  ];
-
-  const root = document.getElementById("clocks");
-  root.innerHTML = CITIES.map((c, i) => `
-    <div class="widget">
-      <div class="city">${c.name}</div>
-      <div class="time" id="time-${i}">--:--</div>
-      <div class="date" id="date-${i}"></div>
-    </div>`).join("");
-
-  function tick() {
-    const now = new Date();
-    CITIES.forEach((c, i) => {
-      const time = new Intl.DateTimeFormat("en-US", {
-        timeZone: c.tz, hour: "2-digit", minute: "2-digit", hour12: !USE_24H
-      }).format(now);
-      const date = new Intl.DateTimeFormat("en-US", {
-        timeZone: c.tz, weekday: "short", month: "short", day: "numeric"
-      }).format(now);
-      document.getElementById("time-" + i).textContent = time;
-      document.getElementById("date-" + i).textContent = date;
-    });
+  .city { font-size: var(--city-size); color: var(--sub-color); letter-spacing: 0.04em; }
+  .flag { margin-right: 3px; vertical-align: -1px; opacity: 0.9; letter-spacing: 0; }
+  .time {
+    font-family: var(--font-time);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1.1;
+    margin: 6px 0;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
   }
+  .time span { display: inline-block; transform: skewX(var(--time-skew)); }
+  .date { font-size: var(--date-size); color: var(--sub-color); letter-spacing: 0.05em; }
 
-  tick();
-  setInterval(tick, 1000);
-</script>
-</body>
-</html>
+  #

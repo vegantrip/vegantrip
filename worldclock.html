@@ -67,4 +67,65 @@
   .time span { display: inline-block; transform: skewX(var(--time-skew)); }
   .date { font-size: var(--date-size); color: var(--sub-color); letter-spacing: 0.05em; }
 
-  #
+  #main .time { font-size: var(--time-size); -webkit-text-stroke: var(--time-stroke) var(--accent); }
+
+  #sub .city { font-size: var(--sub-city-size); letter-spacing: 0.03em; }
+  #sub .time { font-size: var(--sub-time-size); margin: 4px 0; -webkit-text-stroke: var(--sub-time-stroke) var(--accent); }
+  #sub .date { font-size: var(--sub-date-size); letter-spacing: 0.03em; }
+</style>
+</head>
+<body>
+
+<div class="row" id="main"></div>
+<div class="row" id="sub"></div>
+
+<script>
+  const USE_24H = true;
+
+  const MAIN_CITIES = [
+    { name: "Seoul",     flag: "\u{1F1F0}\u{1F1F7}", tz: "Asia/Seoul" },
+    { name: "Hong Kong", flag: "\u{1F1ED}\u{1F1F0}", tz: "Asia/Hong_Kong" }
+  ];
+
+  const SUB_CITIES = [
+    { name: "Anchorage",   flag: "\u{1F1FA}\u{1F1F8}", tz: "America/Anchorage" },
+    { name: "LA",          flag: "\u{1F1FA}\u{1F1F8}", tz: "America/Los_Angeles" },
+    { name: "Mexico City", flag: "\u{1F1F2}\u{1F1FD}", tz: "America/Mexico_City" }
+  ];
+
+  function render(list, prefix, el) {
+    el.innerHTML = list.map((c, i) => `
+      <div class="widget">
+        <div class="city"><span class="flag">${c.flag}</span>${c.name}</div>
+        <div class="time"><span id="${prefix}-time-${i}">--:--</span></div>
+        <div class="date" id="${prefix}-date-${i}"></div>
+      </div>`).join("");
+  }
+
+  function update(list, prefix) {
+    const now = new Date();
+    list.forEach((c, i) => {
+      const time = new Intl.DateTimeFormat("en-US", {
+        timeZone: c.tz, hour: "2-digit", minute: "2-digit", hour12: !USE_24H
+      }).format(now);
+      const date = new Intl.DateTimeFormat("en-US", {
+        timeZone: c.tz, weekday: "short", month: "short", day: "numeric"
+      }).format(now);
+      document.getElementById(prefix + "-time-" + i).textContent = time;
+      document.getElementById(prefix + "-date-" + i).textContent = date;
+    });
+  }
+
+  render(MAIN_CITIES, "m", document.getElementById("main"));
+  render(SUB_CITIES, "s", document.getElementById("sub"));
+
+  function tick() {
+    update(MAIN_CITIES, "m");
+    update(SUB_CITIES, "s");
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>

@@ -21,7 +21,7 @@
     --sub-city-size: 11px;
     --sub-date-size: 11px;
     --vgap-sub: 10px;       /* 보조 줄 간격 */
-    --sub-gap: 6px;
+    --sub-gap: 24px;
 
     --heart-size: 16px;
     --heart-offset: 0px;    /* 하트 위치 미세 조정 (+면 아래로) */
@@ -149,14 +149,14 @@
   const USE_24H = true;
 
   const MAIN_CITIES = [
-    { name: "Seoul",       flag: "\u{1F1F0}\u{1F1F7}", tz: "Asia/Seoul" },
-    { name: "Hong Kong",   flag: "\u{1F1ED}\u{1F1F0}", tz: "Asia/Hong_Kong" }
+    { name: "Seoul", flag: "\u{1F1F0}\u{1F1F7}", tz: "Asia/Seoul" },
+    { name: "HK",    flag: "\u{1F1ED}\u{1F1F0}", tz: "Asia/Hong_Kong" }
   ];
 
   const SUB_CITIES = [
-    { name: "Anchorage",   flag: "\u{1F1FA}\u{1F1F8}", tz: "America/Anchorage" },
-    { name: "LA",          flag: "\u{1F1FA}\u{1F1F8}", tz: "America/Los_Angeles" },
-    { name: "Mexico City", flag: "\u{1F1F2}\u{1F1FD}", tz: "America/Mexico_City" }
+    { name: "AK",  flag: "\u{1F1FA}\u{1F1F8}", tz: "America/Anchorage" },
+    { name: "LA",  flag: "\u{1F1FA}\u{1F1F8}", tz: "America/Los_Angeles" },
+    { name: "MEX", flag: "\u{1F1F2}\u{1F1FD}", tz: "America/Mexico_City" }
   ];
 
   const HEART = `<div class="heart"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>`;

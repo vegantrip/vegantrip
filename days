@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>days together</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --line-size: 20px;
+    --num-size: 32px;
+    --num-stroke: 0.5px;
+    --ymd-size: 15px;
+    --since-size: 14px;
+
+    --line-color: #8a5f74;
+    --date-color: #a98597;
+    --card-bg: linear-gradient(135deg, #f9edf2 0%, #efdfe7 100%);
+    --accent: #d05b82;
+    --font: "Georgia", "Times New Roman", serif;
+    --font-num: "DM Serif Display", "Times New Roman", serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --line-color: #ffffffcc;
+      --date-color: #ffffff99;
+      --card-bg: rgba(232, 120, 138, 0.12);
+      --accent: #f08aa0;
+    }
+  }
+
+  html, body { margin: 0; background: transparent; }
+  body {
+    font-family: var(--font);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 16px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  #card {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 520px;
+    padding: 26px 24px;
+    border-radius: 22px;
+    background: var(--card-bg);
+  }
+  .line {
+    font-size: var(--line-size);
+    line-height: 1.2;
+    color: var(--line-color);
+    font-style: italic;
+    letter-spacing: 0.03em;
+    text-wrap: balance;
+  }
+  .num {
+    font-family: var(--font-num);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--num-size);
+    color: var(--accent);
+    letter-spacing: 0.02em;
+    font-variant-numeric: lining-nums;
+    font-feature-settings: "lnum" 1;
+    -webkit-text-stroke: var(--num-stroke) var(--accent);
+    margin: 0 3px;
+    vertical-align: -1px;
+  }
+  .ymd {
+    font-size: var(--ymd-size);
+    color: var(--line-color);
+    font-style: italic;
+    letter-spacing: 0.03em;
+    margin-top: 6px;
+  }
+  .since {
+    font-size: var(--since-size);
+    color: var(--date-color);
+    font-style: italic;
+    letter-spacing: 0.04em;
+    margin-top: 6px;
+    text-wrap: balance;
+  }
+</style>
+</head>
+<body>
+
+<div id="card">
+  <div class="line">Together for <span class="num" id="days">0</span> days</div>
+  <div class="ymd" id="ymd"></div>
+  <div class="since" id="since"></div>
+</div>
+
+<script>
+  const START = "2026-02-20";      // 사귄 날짜 (YYYY-MM-DD)
+  const FIRST_DAY_IS_1 = true;     // true: 시작일을 1일로 / false: 0일로
+
+  function todayUTC() {
+    const n = new Date();
+    return new Date(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()));
+  }
+
+  function daysSince(startStr) {
+    const [y, m, d] = startStr.split("-").map(Number);
+    let diff = Math.floor((todayUTC() - Date.UTC(y, m - 1, d)) / 86400000);
+    if (FIRST_DAY_IS_1) diff += 1;
+    return Math.max(diff, 0);
+  }
+
+  function addMonths(d, n) {
+    const y = d.getUTCFullYear(), m = d.getUTCMonth() + n, day = d.getUTCDate();
+    const last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+    return new Date(Date.UTC(y, m, Math.min(day, last)));
+  }
+
+  function plural(n, word) { return n + " " + word + (n === 1 ? "" : "s"); }
+
+  // 위 days 숫자와 맞도록, 시작일을 1일로 셀 때는 시작일 하루 전부터 계산
+  function monthsAndDays(startStr) {
+    const [y, m, d] = startStr.split("-").map(Number);
+    const s = new Date(Date.UTC(y, m - 1, d - (FIRST_DAY_IS_1 ? 1 : 0)));
+    const t = todayUTC();
+    let months = (t.getUTCFullYear() - s.getUTCFullYear()) * 12 + (t.getUTCMonth() - s.getUTCMonth());
+    let anchor = addMonths(s, months);
+    if (anchor > t) { months--; anchor = addMonths(s, months); }
+    const days = Math.round((t - anchor) / 86400000);
+    if (months <= 0) return plural(Math.max(days, 0), "day");
+    return plural(months, "month") + (days > 0 ? " " + plural(days, "day") : "");
+  }
+
+  function formatDate(startStr) {
+    const [y, m, d] = startStr.split("-").map(Number);
+    return new Intl.DateTimeFormat("en-US", {
+      timeZone: "UTC", year: "numeric", month: "long", day: "numeric"
+    }).format(new Date(Date.UTC(y, m - 1, d)));
+  }
+
+  function update() {
+    document.getElementById("days").textContent = daysSince(START);
+    document.getElementById("ymd").textContent = monthsAndDays(START);
+    document.getElementById("since").textContent = "since " + formatDate(START);
+  }
+
+  update();
+  setInterval(update, 60 * 1000);
+</script>
+</body>
+</html>
